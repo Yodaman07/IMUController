@@ -60,7 +60,7 @@ void loop() {
   double dt = (current_time - old_time) / 1000;
   old_time = current_time;
 
-  gyro_z += (gyro.gyro.z * dt) * (180/PI);
+  gyro_z += (gyro.gyro.z * dt) * (180/PI); // rad to deg
   gyro_x += (gyro.gyro.x * dt) * (180/PI);
   gyro_y += (gyro.gyro.y * dt) * (180/PI);
 
@@ -82,13 +82,11 @@ void loop() {
     if ((gyro_z-blender_z) >= 15){ccw_z();}
     else if ((gyro_z-blender_z)<=-15){cw_z();}
 
-
     if ((gyro_y-blender_y) >= 15){cw_y();}
     else if ((gyro_y-blender_y)<=-15){ccw_y();}
-
     
-    // if ((gyro_x-blender_x) >= 15){ccw_x();}
-    // else if ((gyro_x-blender_x)<=-15){cw_x();}
+    if ((gyro_x-blender_x) >= 15){ccw_x();}
+    else if ((gyro_x-blender_x)<=-15){cw_x();}
   }
 
 
@@ -119,14 +117,28 @@ void ccw_z(){ //move 15˚ ccw
 void cw_y(){ //move 15˚ forward/cw
   Keyboard.press(0xE8); //orbit up
   Keyboard.releaseAll();
-  blender_x+=15; //CHECK
+  blender_y+=15; //CHECK
 }
 
 void ccw_y(){ //move 15˚ backward/ccw
   Keyboard.press(0xE2); //orbit down
   Keyboard.releaseAll();
-  blender_x-=15;
+  blender_y-=15;
 }
+
+void cw_x(){ //move 15˚ cw
+  Keyboard.press(0xE4); //orbit left
+  Keyboard.releaseAll();
+  blender_x-=15; //CHECK
+}
+
+void ccw_x(){ //move 15˚ ccw
+  Keyboard.press(0xE6); //orbit right
+  Keyboard.releaseAll();
+  blender_x+=15;
+}
+
+//For x: gyro moving right is positive, left is negative. In blender moving right numpad 6 left is numpad 4. Moving right is the ccw motion and moving left is the cw motion
 
 void reset_all(){
   gyro_z = 0;
