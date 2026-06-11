@@ -5,8 +5,9 @@
 //https://github.com/espressif/arduino-esp32/blob/master/libraries/USB/src/USBHIDKeyboard.h
 
 //TODO: REFACTOR FOR CLEAN CODE
-#define green_pin 2
-#define blue_pin 3
+#define green_pin 2 //buton
+#define blue_pin 3 //switch
+#define red_pin 4 //LED
 
 USBHIDKeyboard Keyboard;
 Adafruit_ISM330DHCX ism330dhcx;
@@ -33,8 +34,9 @@ void setup() {
   USB.begin();
   Keyboard.begin();
 
-  pinMode(green_pin, INPUT_PULLDOWN);
-  pinMode(blue_pin, INPUT_PULLDOWN);
+  pinMode(green_pin, INPUT_PULLUP);
+  pinMode(blue_pin, INPUT_PULLUP);
+  pinMode(red_pin, OUTPUT);
 
   if (!ism330dhcx.begin_I2C()) {
     Serial.println("Failed to find ISM330DHCX chip");
@@ -54,6 +56,8 @@ void loop() {
   sensors_event_t gyro;
   sensors_event_t temp;
   ism330dhcx.getEvent(&accel, &gyro, &temp);
+  green_state = digitalRead(green_pin);
+  blue_state = digitalRead(blue_pin);
   
   
   double current_time = millis();
@@ -90,13 +94,19 @@ void loop() {
   }
 
 
-  green_state = digitalRead(green_pin);
-  blue_state = digitalRead(blue_pin);
+  
 
   //for some reason the var names don't work so i put the hex codes from here https://github.com/espressif/arduino-esp32/blob/master/libraries/USB/src/USBHIDKeyboard.h
-  if (green_state == HIGH){ reset_all();}
-  if (blue_state == HIGH){hold_condition = true;}
-  else{hold_condition = false;}
+  if (green_state == LOW){ reset_all();}
+  if (blue_state == LOW){
+    hold_condition = true;
+    digitalWrite(red_pin, HIGH);
+  }else{
+    hold_condition = false
+    digitalWrite(red_pin, LOW);
+  }
+
+  
   delay(100); //prob wanna use milis instead
 }
 
